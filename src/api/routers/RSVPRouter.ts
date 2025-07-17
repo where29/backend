@@ -1,20 +1,23 @@
-// src/api/routers/RSVPRouter.ts
-import { Router } from 'express';
+import { Request, Response, Router as expressRouter } from 'express';
 import { RSVPController } from '../controller/RSVPController';
 import { AuthenticateAndAuthorize } from '../middleware/AuthenticateAndAuthorize';
 import { asyncHandler } from '../../utils/AsyncHandler';
 
 export class RSVPRouter {
-  public routes: Router;
+  readonly routes: expressRouter;
 
-  constructor(private controller: RSVPController, private auth: AuthenticateAndAuthorize) {
-    this.routes = Router();
-    this.initializeRoutes();
+  constructor(
+    private readonly controller: RSVPController,
+    private readonly auth: AuthenticateAndAuthorize
+  ) {
+    this.routes = expressRouter();
+    this.routes.use(this.auth.authenticate());
+    this.setupRoutes();
   }
 
-  private initializeRoutes() {
-    this.routes.post('/', this.auth.authenticate(), asyncHandler(this.controller.rsvpToEvent.bind(this.controller)));
-    this.routes.get('/place/:placeId', asyncHandler(this.controller.getRSVPsByPlace.bind(this.controller)));
-    this.routes.get('/user/:userId', asyncHandler(this.controller.getRSVPsByUser.bind(this.controller)));
+  private setupRoutes() {
+    this.routes.post('/', asyncHandler((req: Request, res: Response) => this.controller.rsvpToEvent(req, res)));
+    this.routes.get('/place/:placeId', asyncHandler((req: Request, res: Response) => this.controller.getRSVPsByPlace(req, res)));
+    this.routes.get('/user/:userId', asyncHandler((req: Request, res: Response) => this.controller.getRSVPsByUser(req, res)));
   }
 }

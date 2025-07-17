@@ -1,42 +1,47 @@
-// src/data/data-sources/RSVPDataSourcePrisma.ts
 import { PrismaClient } from '@prisma/client';
 import { RSVPRepository } from '../interfaces/RSVPRepository';
 
-const prisma = new PrismaClient();
+export class RSVPPrisma implements RSVPRepository {
+  constructor(private readonly prisma: PrismaClient) {}
 
-export class RSVPDataSourcePrisma implements RSVPRepository {
   async upsertRSVP(data: {
     userId: number;
-    placeId?: number;
-    eventId?: number;
+    placeId: number;
+    eventId: number;
     dateTime: Date;
     going: boolean;
   }) {
-    return await prisma.rSVP.upsert({
+    return await this.prisma.rSVP.upsert({
       where: {
         userId_placeId_eventId_dateTime: {
           userId: data.userId,
-          placeId: data.placeId ?? null,
-          eventId: data.eventId ?? null,
+          placeId: data.placeId,
+          eventId: data.eventId,
           dateTime: data.dateTime,
         },
       },
       update: {
         going: data.going,
       },
-      create: data,
+      create: {
+        userId: data.userId,
+        placeId: data.placeId,
+        eventId: data.eventId,
+        dateTime: data.dateTime,
+        going: data.going,
+      },
     });
   }
 
   async getRSVPsByPlace(placeId: number) {
-    return await prisma.rSVP.findMany({
+    return await this.prisma.rSVP.findMany({
       where: { placeId },
       include: { user: true, event: true },
     });
   }
 
   async getRSVPsByUser(userId: number) {
-    return await prisma.rSVP.findMany({
+    return await this.prisma.rSVP.findMany({
       where: { userId },
       include: { place: true, event: true },
     });

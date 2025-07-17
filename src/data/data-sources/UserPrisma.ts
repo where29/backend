@@ -1,38 +1,42 @@
-// src/data/data-sources/UserDataSourcePrisma.ts
 import { PrismaClient } from '@prisma/client';
 import { UserRepository } from '../interfaces/UserRepository';
+import { User } from '../../domain/entities/User';
 
-const prisma = new PrismaClient();
+export class UserPrisma implements UserRepository {
+  constructor(private readonly prisma: PrismaClient) {}
 
-export class UserDataSourcePrisma implements UserRepository {
-  async findUserById(id: number) {
-    return await prisma.user.findUnique({
-      where: { id },
-    });
+  async findUserByEmail(email: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) return null;
+    return new User(user.id, user.email, user.name, user.password);
   }
 
-  async findUserByEmail(email: string) {
-    return await prisma.user.findUnique({
-      where: { email },
+  async createUser(userData: { name: string; email: string; passwordHash: string }): Promise<User> {
+    const user = await this.prisma.user.create({
+      data: {
+        name: userData.name,
+        email: userData.email,
+        password: userData.passwordHash,
+      },
     });
+    return new User(user.id, user.email, user.name, user.password);
   }
 
-  async createUser(data: { email: string; name: string; passwordHash: string }) {
-    return await prisma.user.create({
-      data,
-    });
+  async findUserById(id: number): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) return null;
+    return new User(user.id, user.email, user.name, user.password);
   }
 
-  async updateUser(id: number, updates: Partial<{ name: string; email: string; passwordHash: string }>) {
-    return await prisma.user.update({
+  async updateUser(id: number, updates: Partial<{ name: string; email: string; passwordHash: string }>): Promise<User | null> {
+    const user = await this.prisma.user.update({
       where: { id },
       data: updates,
     });
+    return new User(user.id, user.email, user.name, user.password);
   }
 
-  async deleteUser(id: number) {
-    return await prisma.user.delete({
-      where: { id },
-    });
+  async deleteUser(id: number): Promise<void> {
+    await this.prisma.user.delete({ where: { id } });
   }
 }

@@ -1,18 +1,21 @@
-// src/api/routers/UserRouter.ts
-import { Router } from 'express';
+import { Request, Response, Router as expressRouter } from 'express';
 import { UserController } from '../controller/UserController';
 import { AuthenticateAndAuthorize } from '../middleware/AuthenticateAndAuthorize';
 import { asyncHandler } from '../../utils/AsyncHandler';
 
 export class UserRouter {
-  public routes: Router;
+  readonly routes: expressRouter;
 
-  constructor(private controller: UserController, private auth: AuthenticateAndAuthorize) {
-    this.routes = Router();
-    this.initializeRoutes();
+  constructor(
+    private readonly controller: UserController,
+    private readonly auth: AuthenticateAndAuthorize
+  ) {
+    this.routes = expressRouter();
+    this.routes.use(this.auth.authenticate());
+    this.setupRoutes();
   }
 
-  private initializeRoutes() {
-    this.routes.get('/me', this.auth.authenticate(), asyncHandler(this.controller.getProfile.bind(this.controller)));
+  private setupRoutes() {
+    this.routes.get('/me', asyncHandler((req: Request, res: Response) => this.controller.getProfile(req, res)));
   }
 }

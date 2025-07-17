@@ -1,18 +1,17 @@
-// src/api/routers/PlaceRouter.ts
-import { Router } from 'express';
+import { Request, Response, Router as expressRouter } from 'express';
 import { PlaceController } from '../controller/PlaceController';
 import { asyncHandler } from '../../utils/AsyncHandler';
 
 export class PlaceRouter {
-  public routes: Router;
+  readonly routes: expressRouter;
 
-  constructor(private controller: PlaceController) {
-    this.routes = Router();
-    this.initializeRoutes();
+  constructor(private readonly controller: PlaceController) {
+    this.routes = expressRouter();
+    this.setupRoutes();
   }
 
-  private initializeRoutes() {
-    this.routes.get('/', asyncHandler(this.controller.getAllPlaces.bind(this.controller)));
-    this.routes.get('/:placeId', asyncHandler(this.controller.getPlaceById.bind(this.controller)));
+  private setupRoutes() {
+    this.routes.get('/', asyncHandler((req: Request, res: Response) => this.controller.getAllPlaces(req, res)));
+    this.routes.get('/:placeId', asyncHandler((req: Request, res: Response) => this.controller.getPlaceById(req, res)));
   }
 }

@@ -1,10 +1,9 @@
-// src/data/data-sources/EventDataSourcePrisma.ts
 import { PrismaClient } from '@prisma/client';
 import { EventRepository } from '../interfaces/EventRepository';
 
-const prisma = new PrismaClient();
+export class EventPrisma implements EventRepository {
+  constructor(private readonly prisma: PrismaClient) {}
 
-export class EventDataSourcePrisma implements EventRepository {
   async createEvent(data: {
     title: string;
     description?: string;
@@ -12,20 +11,18 @@ export class EventDataSourcePrisma implements EventRepository {
     placeId: number;
     createdById: number;
   }) {
-    return await prisma.event.create({
-      data,
-    });
+    return await this.prisma.event.create({ data });
   }
 
   async getEventsByPlace(placeId: number) {
-    return await prisma.event.findMany({
+    return await this.prisma.event.findMany({
       where: { placeId },
       orderBy: { dateTime: 'asc' },
     });
   }
 
   async getEventsByUser(userId: number) {
-    return await prisma.event.findMany({
+    return await this.prisma.event.findMany({
       where: { createdById: userId },
       orderBy: { dateTime: 'desc' },
     });

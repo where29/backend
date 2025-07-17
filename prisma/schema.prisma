@@ -8,62 +8,63 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String?
-  password  String
-  role      UserRole  @default(USER)
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  name     String
+  password String
+  role     UserRole @default(USER)
 
-  rsvps     RSVP[]
-  events    Event[]   @relation("EventCreator")
-  following Follow[]  @relation("UserFollowing")
-  followers Follow[]  @relation("UserFollowers")
+  rsvps  RSVP[]
+  events Event[] @relation("EventCreator")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  following Follow[] @relation("Followings")
+  followers Follow[] @relation("Followers")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Place {
-  id         Int       @id @default(autoincrement())
-  placeId    String    @unique  // Google Maps place ID
-  name       String
-  latitude   Float
-  longitude  Float
+  id        Int    @id @default(autoincrement())
+  placeId   String @unique // Google Maps place ID
+  name      String
+  latitude  Float
+  longitude Float
 
-  events     Event[]
-  rsvps      RSVP[]
+  events Event[]
+  rsvps  RSVP[]
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Event {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String?
   dateTime    DateTime
   createdById Int
   placeId     Int
 
-  createdBy   User      @relation("EventCreator", fields: [createdById], references: [id])
-  place       Place     @relation(fields: [placeId], references: [id])
-  rsvps       RSVP[]
+  createdBy User   @relation("EventCreator", fields: [createdById], references: [id])
+  place     Place  @relation(fields: [placeId], references: [id])
+  rsvps     RSVP[]
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RSVP {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  placeId   Int?
-  eventId   Int?
-  dateTime  DateTime
-  going     Boolean
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  placeId  Int
+  eventId  Int
+  dateTime DateTime
+  going    Boolean
 
-  user      User     @relation(fields: [userId], references: [id])
-  place     Place?   @relation(fields: [placeId], references: [id])
-  event     Event?   @relation(fields: [eventId], references: [id])
+  user  User   @relation(fields: [userId], references: [id])
+  place Place? @relation(fields: [placeId], references: [id])
+  event Event? @relation(fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
 
@@ -71,25 +72,24 @@ model RSVP {
 }
 
 model Follow {
-  id          Int         @id @default(autoincrement())
   followerId  Int
-  followeeId  Int
+  followingId Int
   status      FollowStatus @default(FOLLOWING)
   createdAt   DateTime     @default(now())
 
-  follower    User         @relation("UserFollowing", fields: [followerId], references: [id])
-  followee    User         @relation("UserFollowers", fields: [followeeId], references: [id])
+  follower  User @relation("Followings", fields: [followerId], references: [id])
+  following User @relation("Followers", fields: [followingId], references: [id])
 
-  @@unique([followerId, followeeId])
+  @@id([followerId, followingId])
+}
+
+enum FollowStatus {
+  FOLLOWING
+  FRIEND
 }
 
 enum UserRole {
   USER
   HOST
   ADMIN
-}
-
-enum FollowStatus {
-  FOLLOWING
-  FRIENDS
 }

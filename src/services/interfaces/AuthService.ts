@@ -1,6 +1,7 @@
 export interface AuthService {
-  login(email: string, password: string): Promise<{ token: string } | null>;
-  register(name: string, email: string, password: string): Promise<{ token: string }>;
-  hashPassword(password: string): Promise<string>;
-  comparePasswords(password: string, hashed: string): Promise<boolean>;
+  login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string } | null>;
+  register(name: string, email: string, password: string): Promise<{ accessToken: string; refreshToken: string }>;
+  verifyRefreshToken(token: string): Promise<{ userId: number; email: string }>;
+  refresh(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }>;
+  revoke(refreshToken: string): Promise<void>;
 }
