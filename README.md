@@ -1,4 +1,4 @@
-# Airbnb Clone Backend
+# Friend network evevent viewer Backend
 
 A modular and scalable backend built with Node.js, Express, and Prisma. It supports user authentication, place listings, RSVP functionality, and friend/follow relationships.
 
