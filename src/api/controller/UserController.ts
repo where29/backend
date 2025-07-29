@@ -12,6 +12,13 @@ export class UserController {
     const user = await this.userService.getUserById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    res.status(200).json(user);
+    // Return user data without password hash
+    const userProfile = {
+      id: user.getId(),
+      email: user.getEmail(),
+      name: user.getName()
+    };
+
+    res.status(200).json(userProfile);
   }
 }
