@@ -62,7 +62,7 @@ const authMiddleware = new AuthenticateAndAuthorize(jwtService);
 const authController = new AuthController(authService);
 const eventController = new EventController(eventService);
 const placeController = new PlaceController(placeService);
-const rsvpController = new RSVPController(rsvpService);
+const rsvpController = new RSVPController(rsvpService, placeService);
 const userController = new UserController(userService);
 const friendController = new FollowController(followService);
 

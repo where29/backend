@@ -12,4 +12,18 @@ export class PlaceServiceImpl implements PlaceService {
   async getPlaceById(id: number) {
     return await this.placeRepository.getPlaceById(id);
   }
+
+  async getPlaceByPlaceId(placeId: string) {
+    return await this.placeRepository.getPlaceByPlaceId(placeId);
+  }
+
+  async createPlace(data: {
+    id?: number;
+    placeId: string;
+    name: string;
+    latitude: number;
+    longitude: number;
+  }) {
+    return await this.placeRepository.createPlace(data);
+  }
 }

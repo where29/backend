@@ -13,5 +13,7 @@ export class PlaceRouter {
   private setupRoutes() {
     this.routes.get('/', asyncHandler((req: Request, res: Response) => this.controller.getAllPlaces(req, res)));
     this.routes.get('/:placeId', asyncHandler((req: Request, res: Response) => this.controller.getPlaceById(req, res)));
+    this.routes.post('/', asyncHandler((req: Request, res: Response) => this.controller.createPlace(req, res)));
+    this.routes.post('/bulk', asyncHandler((req: Request, res: Response) => this.controller.bulkCreatePlaces(req, res)));
   }
 }
