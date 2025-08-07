@@ -2,6 +2,7 @@
 import { AuthService } from '../interfaces/AuthService';
 import { UserRepository } from '../../data/interfaces/UserRepository';
 import { User } from '../../domain/entities/User';
+import { EmailAlreadyExistsError } from '../../data/data-sources/UserPrisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -24,11 +25,18 @@ export class AuthServiceImpl implements AuthService {
   }
 
   async register(name: string, email: string, password: string): Promise<{ accessToken: string; refreshToken: string }> {
-    const passwordHash = await this.hashPassword(password);
-    const user = await this.userRepository.createUser({ name, email, passwordHash });
-    const accessToken = this.generateAccessToken(user.getId(), user.getEmail());
-    const refreshToken = this.generateRefreshToken(user.getId(), user.getEmail());
-    return { accessToken, refreshToken };
+    try {
+      const passwordHash = await this.hashPassword(password);
+      const user = await this.userRepository.createUser({ name, email, passwordHash });
+      const accessToken = this.generateAccessToken(user.getId(), user.getEmail());
+      const refreshToken = this.generateRefreshToken(user.getId(), user.getEmail());
+      return { accessToken, refreshToken };
+    } catch (error) {
+      if (error instanceof EmailAlreadyExistsError) {
+        throw error; // Re-throw to be handled by the controller
+      }
+      throw error;
+    }
   }
 
   generateAccessToken(userId: number, email: string): string {

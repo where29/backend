@@ -1,6 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { UserRepository } from '../interfaces/UserRepository';
 import { User } from '../../domain/entities/User';
+
+export class EmailAlreadyExistsError extends Error {
+  constructor(email: string) {
+    super(`User with email ${email} already exists`);
+    this.name = 'EmailAlreadyExistsError';
+  }
+}
 
 export class UserPrisma implements UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -12,14 +19,32 @@ export class UserPrisma implements UserRepository {
   }
 
   async createUser(userData: { name: string; email: string; passwordHash: string }): Promise<User> {
-    const user = await this.prisma.user.create({
-      data: {
-        name: userData.name,
-        email: userData.email,
-        password: userData.passwordHash,
-      },
-    });
-    return new User(user.id, user.email, user.name, user.password);
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          name: userData.name,
+          email: userData.email,
+          password: userData.passwordHash,
+        },
+      });
+      return new User(user.id, user.email, user.name, user.password);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // P2002 is the error code for unique constraint violations
+        if (error.code === 'P2002') {
+          const target = error.meta?.target;
+          if (Array.isArray(target) && target.includes('email')) {
+            throw new EmailAlreadyExistsError(userData.email);
+          }
+          // If target is not an array or doesn't specify, but it's a unique constraint error,
+          // and we're dealing with user email, it's likely the email constraint
+          if (error.message.includes('User_email_key')) {
+            throw new EmailAlreadyExistsError(userData.email);
+          }
+        }
+      }
+      throw error;
+    }
   }
 
   async findUserById(id: number): Promise<User | null> {
