@@ -4,7 +4,9 @@ import { FollowService } from '../../services/interfaces/FollowService';
 import { FollowStatus } from '../../domain/entities/FollowStatus';
 
 export class FollowController {
-  constructor(private readonly followService: FollowService) {}
+  constructor(
+    private readonly followService: FollowService
+  ) {}
 
   async followUser(req: Request, res: Response) {
     const followerId = req.user?.id;

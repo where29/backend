@@ -17,5 +17,6 @@ export class UserRouter {
 
   private setupRoutes() {
     this.routes.get('/me', asyncHandler((req: Request, res: Response) => this.controller.getProfile(req, res)));
+    this.routes.get('/search', asyncHandler((req: Request, res: Response) => this.controller.searchByEmail(req, res)));
   }
 }
