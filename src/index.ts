@@ -2,6 +2,10 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// Check environment variables before starting
+import { runDevEnvironmentCheck } from './utils/envChecker';
+runDevEnvironmentCheck();
+
 import { createServer } from './server';
 
 import { PrismaClient } from '@prisma/client';
@@ -30,7 +34,7 @@ import { RSVPPrisma } from './data/data-sources/RSVPPrisma';
 import { FollowPrisma } from './data/data-sources/FollowPrisma';
 
 import { AuthServiceImpl } from './services/auth/AuthServiceImpl';
-import { EventServiceImpl } from './services/event/EventServiceImpl';
+import { EventServiceImpl } from './services/event/EventServiceimpl';
 import { PlaceServiceImpl } from './services/place/PlaceServiceImpl';
 import { RSVPServiceImpl } from './services/rsvp/RSVPServiceImpl';
 import { UserServiceImpl } from './services/user/UserServiceImpl';
