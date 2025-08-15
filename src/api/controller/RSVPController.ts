@@ -80,4 +80,17 @@ export class RSVPController {
     const rsvps = await this.rsvpService.getRSVPsByUser(userId);
     res.status(200).json(rsvps);
   }
+
+  async getRSVPsByEvent(req: Request, res: Response) {
+    const eventId = parseInt(req.params.eventId);
+    const rsvps = await this.rsvpService.getRSVPsByEvent(eventId);
+    res.status(200).json(rsvps);
+  }
+
+  async getRSVPsByEventAndPlace(req: Request, res: Response) {
+    const eventId = parseInt(req.params.eventId);
+    const placeId = parseInt(req.params.placeId);
+    const rsvps = await this.rsvpService.getRSVPsByEventAndPlace(eventId, placeId);
+    res.status(200).json(rsvps);
+  }
 }

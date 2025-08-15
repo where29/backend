@@ -22,4 +22,12 @@ export class RSVPServiceImpl implements RSVPService {
   async getRSVPsByUser(userId: number) {
     return await this.rsvpRepository.getRSVPsByUser(userId);
   }
+
+  async getRSVPsByEvent(eventId: number) {
+    return await this.rsvpRepository.getRSVPsByEvent(eventId);
+  }
+
+  async getRSVPsByEventAndPlace(eventId: number, placeId: number) {
+    return await this.rsvpRepository.getRSVPsByEventAndPlace(eventId, placeId);
+  }
 }

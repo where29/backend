@@ -46,4 +46,18 @@ export class RSVPPrisma implements RSVPRepository {
       include: { place: true, event: true },
     });
   }
+
+  async getRSVPsByEvent(eventId: number) {
+    return await this.prisma.rSVP.findMany({
+      where: { eventId },
+      include: { user: true, place: true, event: true },
+    });
+  }
+
+  async getRSVPsByEventAndPlace(eventId: number, placeId: number) {
+    return await this.prisma.rSVP.findMany({
+      where: { eventId, placeId },
+      include: { user: true, place: true, event: true },
+    });
+  }
 }
