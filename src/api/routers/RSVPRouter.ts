@@ -19,5 +19,7 @@ export class RSVPRouter {
     this.routes.post('/', asyncHandler((req: Request, res: Response) => this.controller.rsvpToEvent(req, res)));
     this.routes.get('/place/:placeId', asyncHandler((req: Request, res: Response) => this.controller.getRSVPsByPlace(req, res)));
     this.routes.get('/user/:userId', asyncHandler((req: Request, res: Response) => this.controller.getRSVPsByUser(req, res)));
+  this.routes.get('/event/:eventId', asyncHandler((req: Request, res: Response) => this.controller.getRSVPsByEvent(req, res)));
+  this.routes.get('/event/:eventId/place/:placeId', asyncHandler((req: Request, res: Response) => this.controller.getRSVPsByEventAndPlace(req, res)));
   }
 }

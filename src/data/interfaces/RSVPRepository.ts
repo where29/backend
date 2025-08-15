@@ -9,4 +9,6 @@ export interface RSVPRepository {
 
   getRSVPsByPlace(placeId: number): Promise<any[]>;
   getRSVPsByUser(userId: number): Promise<any[]>;
+  getRSVPsByEvent(eventId: number): Promise<any[]>;
+  getRSVPsByEventAndPlace(eventId: number, placeId: number): Promise<any[]>;
 }
